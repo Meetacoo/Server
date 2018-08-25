@@ -38,7 +38,7 @@ app.use((req,res,next)=>{
 })
 app.use(session({
 	//设置cookie名称
-	name:'blog',
+	name:'ssite',
 	//用它来对session cookie签名，防止篡改
 	secret: 'keyboard cat',
 	//强制保存session即使它并没有变化
@@ -52,10 +52,25 @@ app.use(session({
     //设置session存储在数据库中
     store:new MongoStore({ mongooseConnection: mongoose.connection }) 
 }))
+
 app.use((req,res,next)=>{
-	req.userInfo = req.session.userInfo || {};
-	next();
+	if (req.userInfo.isAdmin) {
+		next();
+	} else {
+		res.send({
+			code:10
+		})
+	}
 })
+app.use((req,res,next)=>{
+	if (req.method == "OPTIONS") {
+		res.end('ok')
+	} else {
+		next();
+	}
+})
+
+
 
 // 4:添加处理post请求的中间件
 app.use(bodyParser.urlencoded({ extended:false }));
