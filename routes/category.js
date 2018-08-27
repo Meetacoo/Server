@@ -8,14 +8,12 @@ router.use((req,res,next)=>{
 	if (req.userInfo.isAdmin) {
 		next();
 	}else{
-		res.send('<h1>请用管理员账号登录</h1>');
+		res.send({
+			code:10
+		});
 	}
 })
-/*router.get('/',(req,res)=>{
-	res.render('admin/category',{
-		userInfo:req.userInfo
-	});
-})*/
+
 router.get('/list',(req,res)=>{
 	let options = {
 		page: req.query.page,
@@ -38,7 +36,7 @@ router.get('/list',(req,res)=>{
 })
 
 //显示用户列表
-router.get('/add',(req,res)=>{
+router.get('/',(req,res)=>{
 	// res.render('index');
 	// res.send("index ok");
 	res.render('admin/category_add_edit',{
@@ -47,35 +45,34 @@ router.get('/add',(req,res)=>{
 
 });
 
-router.post('/add',(req,res)=>{
+router.post('/',(req,res)=>{
 	// res.send("add ok");
 	let body = req.body;
 	categoryModel.findOne({name:body.name})
 	.then((cate)=>{
 		if(cate){//已经存在渲染错误页面
-			res.render('admin/error',{
-				userInfo:req.userInfo,
+			res.json({
+				code:1,
 				message:'新增分类失败,已有同名分类',
 			})
 		}else{
 			new categoryModel({
 				name:body.name,
-				order:body.order
+				pid:body.pid
 			})
 			.save()
 			.then((newCate)=>{
 				if(newCate){
 					// res.send('ok');
-					res.render('admin/success',{
-						userInfo:req.userInfo,
+					res.json({
+						code:0,
 						message:'新增分类成功',
-						url:'/category/list'
 					})
 				}
 			})
 			.catch((err)=>{//新增失败,渲染错误页面
-		 		res.render('admin/error',{
-					userInfo:req.userInfo,
+		 		res.json({
+					code:1,
 					message:'新增分类失败,数据库操作失败'
 				})
 			})

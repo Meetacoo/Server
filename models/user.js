@@ -10,7 +10,15 @@ var BlogSchema = new mongoose.Schema({
 	isAdmin: {
 		type:Boolean,
 		default:false // 默认是普通用户
+	},
+	email: {
+		type:String 
+	},
+	phone: {
+		type:String 
 	}
+},{
+	timestamps:true
 });
 
 const BlogModel = mongoose.model('User',BlogSchema);

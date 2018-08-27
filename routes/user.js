@@ -4,6 +4,25 @@ const hmac = require('../util/hmac.js')
 
 const router = Router(); 
 
+/*// 初始化
+router.get("/init",(req,res)=>{
+	const users = [];
+	console.log(users)
+	for (var i = 0; i < 100; i++) {
+		users.push({
+			username:'test'+i,
+			password:hmac('test'+i),
+			isAdmin:false,
+			email:'test' + i + '@huahau.com',
+			phone:'15090266' + i
+		})
+	}
+	userModel.create(users)
+	.then((result)=>{
+		res.end('ok')
+	})
+})*/
+
 // 注册用户
 router.post('/register',(req,res)=>{
 	let obj = req.body;
@@ -65,5 +84,24 @@ router.post('/login',(req,res)=>{
 })
 
 
+router.get('/logout',(req,res)=>{
+	let result = {
+		code:0,
+		massage:''
+	}
+	req.session.destroy();
+	res.json(result);
+})
+
+
+router.use((req,res,next)=>{
+	if (req.userInfo.isAdmin) {
+		next();
+	} else {
+		res.send({
+			code:10
+		})
+	}
+})
 
 module.exports = router;

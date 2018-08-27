@@ -67,21 +67,13 @@ router.post('/login',(req,res)=>{
 		}
 	})
 })
-router.get('/logout',(req,res)=>{
-	let result = {
-		code:0,
-		massage:''
-	}
-	req.session.destroy();
-	res.json(result);
-})
-// 
+// 统计
 router.get('/count',(req,res)=>{
 	let result = {
 		code:0,
 		massage:'',
 		usernum:250,
-		catenum:250,
+		ordernum:250,
 		goodsnum:250
 	}
 	res.json(result);
@@ -93,21 +85,32 @@ router.get('/users',(req,res)=>{
 		page: req.query.page,
 		model: userModel,
 		query :{},
-		show: '_id username isAdmin',
+		show: '-password -__v -updateAt',
 		sort: {_id:1}
 	}
 	pagination(options)
-	.then((data)=>{
-		res.render('admin/userlist',{
-			userInfo:req.userInfo,
-			users:data.docs,
-			page:data.page,
-			list:data.list,
-			pages:data.pages,
-			url:'/admin/users'
-		});	 
+	.then((result)=>{
+		res.json({
+			code:0,
+			data:{
+				current:result.current,
+				total:result.total,
+				list:result.list,
+				pageSize:result.pageSize
+			}
+		})
 	})
 })
+
+
+
+
+
+
+
+
+
+
 
 router.post('/uploadImages',upload.single('upload'),(req,res)=>{
 	let path = "/uploads/"+req.file.filename;

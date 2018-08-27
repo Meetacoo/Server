@@ -54,14 +54,10 @@ app.use(session({
 }))
 
 app.use((req,res,next)=>{
-	if (req.userInfo.isAdmin) {
-		next();
-	} else {
-		res.send({
-			code:10
-		})
-	}
-})
+	req.userInfo  = req.session.userInfo || {};
+	next();	
+});
+
 app.use((req,res,next)=>{
 	if (req.method == "OPTIONS") {
 		res.end('ok')
