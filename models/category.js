@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const pagination = require('../util/pagination.js');
 
 var CategorySchema = new mongoose.Schema({
 	name: {
@@ -20,7 +21,7 @@ CategorySchema.statics.getPaginationCategories = function(page,query={}){
 			model:this, //操作的数据模型
 			query:query, //查询条件
 			projection:'_id name order pid', //投影，
-			sort:{_id:-1}, //排序
+			sort:{order:-1}, //排序
 		}
 		pagination(options)
 		.then((data)=>{

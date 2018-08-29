@@ -106,10 +106,11 @@ router.get('/',(req,res)=>{
 		}
 		pagination(options)
 	*/
-		categoryModel.getPaginationCategories(req)
+		categoryModel
+		.getPaginationCategories(page,{pid:pid})
 		.then((result)=>{
 			// console.log(result)
-			res.json({
+			res.json({ 
 				code:0,
 				data:{
 					current:result.current,
@@ -136,7 +137,28 @@ router.get('/',(req,res)=>{
 	}
 })
 
-
+router.get('/',(req,res)=>{
+	let options = {
+		page: req.query.page,
+		model: categoryModel,
+		query :{},
+		projection: '_id name order',
+		sort: {_id:1}
+	}
+	pagination(options)
+	.then((result)=>{
+		// console.log(result)
+		res.json({
+			code:0,
+			data:{
+				current:result.current,
+				total:result.total,
+				list:result.list,
+				pageSize:result.pageSize
+			}
+		});	 
+	})
+});
 
 
 
