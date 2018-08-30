@@ -137,7 +137,86 @@ router.get('/',(req,res)=>{
 	}
 })
 
-router.get('/',(req,res)=>{
+
+//更新name
+router.put("/updateName",(req,res)=>{
+	let body = req.body;
+	categoryModel
+	.findOne({name:body.name,pid:body.pid})
+	.then((cate)=>{
+		if(cate){
+			res.json({
+				code:1,
+				message:'更新分类失败,已有同名分类',
+			})
+		}else{
+			categoryModel
+			.update({_id:body.id},{name:body.name})
+			.then((cates)=>{
+				if (cates) {
+					categoryModel
+					.getPaginationCategories(body.page,{pid:body.pid})
+					.then((result)=>{
+						// console.log(result)
+						res.json({ 
+							code:0,
+							data:{
+								current:result.current,
+								total:result.total,
+								list:result.list,
+								pageSize:result.pageSize
+							}
+						});	 
+					})
+				} else {
+					res.json({
+						code:1,
+						message:'更新分类失败,数据库操作失败'
+					})
+				}
+			})
+		}
+	})
+	.catch((err)=>{//新增失败,渲染错误页面
+		res.json({
+			code:1,
+			message:'更新分类失败,数据库操作失败la'
+		})
+	})
+});
+
+//更新order
+router.put("/updateOrder",(req,res)=>{
+	let body = req.body;
+	categoryModel
+	.update({_id:body.id},{order:body.order})
+	.then((cate)=>{
+		if (cate) {
+			categoryModel
+			.getPaginationCategories(body.page,{pid:body.pid})
+			.then((result)=>{
+				// console.log(result)
+				res.json({ 
+					code:0,
+					data:{
+						current:result.current,
+						total:result.total,
+						list:result.list,
+						pageSize:result.pageSize
+					}
+				});	 
+			})
+		} else {
+			res.json({
+				code:1,
+				message:'更新分类失败,数据库操作失败'
+			})
+		}
+	})
+});
+
+
+/*router.get('/',(req,res)=>{
 	let options = {
 		page: req.query.page,
 		model: categoryModel,
@@ -158,7 +237,7 @@ router.get('/',(req,res)=>{
 			}
 		});	 
 	})
-});
+});*/
 
 
 
@@ -228,32 +307,6 @@ router.post('/edit',(req,res)=>{
 		userInfo:req.userInfo,
 	})*/
 	let body = req.body;
-	// console.log(body);
-/*categoryModel.findOne({name:body.name})
-	.then((category)=>{
-		if (category && category.order == body.order ) {
-			res.render('admin/error',{
-				userInfo:req.userInfo,
-				message:'编辑分类失败,已有同名分类'
-			})
-		} else {
-			categoryModel.update({_id:body.id},{name:body.name,order:body.order},(err,raw)=>{
-				if(!err){
-					res.render('admin/success',{
-						userInfo:req.userInfo,
-						message:'修改分类成功',
-						url:'/category/list'
-					})					
-				}else{
-			 		res.render('admin/error',{
-						userInfo:req.userInfo,
-						message:'修改分类失败,数据库操作失败'
-					})					
-				}
-			})
-		}
-	})
-*/
 	categoryModel.findById(body.id)
 	.then((category)=>{
 		if (category.name == body.name && category.order == body.order) {
