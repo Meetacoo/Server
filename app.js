@@ -33,7 +33,7 @@ app.use((req,res,next)=>{
 	res.append('Access-Control-Allow-Origin',"http://localhost:3000");
 	res.append("Access-Control-Allow-Credentials",true);
 	res.append("Access-Control-Allow-Methods","GET, POST, PUT,DELETE");
-	res.append("Access-Control-Allow-Headers", "Content-Type, X-Requested-With");
+	res.append("Access-Control-Allow-Headers", "Content-Type, X-Requested-With, X-File-Name");
 	next();
 })
 app.use(session({
@@ -74,10 +74,11 @@ app.use(bodyParser.json());
 
 // 5:处理路由
 app.use('/admin',require('./routes/admin.js'));
+app.use('/category',require('./routes/category.js'));
+app.use('/product',require('./routes/product.js'));
 
 app.use('/',require('./routes/index.js'));
 app.use('/user',require('./routes/user.js'));
-app.use('/category',require('./routes/category.js'));
 app.use('/article',require('./routes/article.js'));
 app.use('/comment',require('./routes/comment.js'));
 app.use('/resource',require('./routes/resource.js'));
