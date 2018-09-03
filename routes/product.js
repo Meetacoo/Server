@@ -54,7 +54,6 @@ router.post('/save',(req,res)=>{
 		new productModel({
 			name:body.name,
 			category:body.category,
-			name:body.name,
 			description:body.description,
 			price:body.price,
 			images:body.images,
@@ -90,6 +89,35 @@ router.post('/save',(req,res)=>{
  		res.json({
 			code:1,
 			message:'新增商品失败,数据库操作失败'
+		})
+	})
+});
+
+router.put('/save',(req,res)=>{
+	// res.send("add ok");
+	let body = req.body;
+	// console.log(body)
+	productModel
+	.update({_id:body.id},
+	{
+		name:body.name,
+		category:body.category,
+		description:body.description,
+		price:body.price,
+		images:body.images,
+		stock:body.stock,
+		detail:body.detail
+	})
+	.then((product)=>{
+		res.json({ 
+			code:0,
+			message: '更新商品成功'
+		})
+	})
+	.catch((e)=>{
+		res.json({
+			code:1,
+			message:'更新商品失败,数据库操作失败'
 		})
 	})
 });
@@ -154,8 +182,8 @@ router.put("/updateStatus",(req,res)=>{
 	let body = req.body;
 	productModel
 	.update({_id:body.id},{status:body.status})
-	.then((Product)=>{
-		if (Product) {
+	.then((product)=>{
+		if (product) {
 			res.json({ 
 				code:0,
 				message:'更新状态成功'
@@ -201,4 +229,31 @@ router.get('/detail',(req,res)=>{
 	});
 })
 
+
+
+router.get('/search',(req,res)=>{
+	let page = req.query.page || 1;
+	let keyword = req.query.keyword
+	productModel
+	.getPaginationProducts(page,{name:new RegExp(keyword,'ig')})
+	.then((result)=>{
+		// console.log(result)
+		res.json({ 
+			code:0,
+			data:{
+				current:result.current,
+				total:result.total,
+				list:result.list,
+				pageSize:result.pageSize,
+				keyword:keyword
+			}
+		});	 
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			message:'查找分类失败,数据库操作失败'
+		})
+	});
+})
 module.exports = router;
