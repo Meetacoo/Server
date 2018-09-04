@@ -235,7 +235,7 @@ router.get('/search',(req,res)=>{
 	let page = req.query.page || 1;
 	let keyword = req.query.keyword
 	productModel
-	.getPaginationProducts(page,{name:new RegExp(keyword,'ig')})
+	.getPaginationProducts(page,{name:{$regex:new RegExp(keyword,'i')}})
 	.then((result)=>{
 		// console.log(result)
 		res.json({ 
