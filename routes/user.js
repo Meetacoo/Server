@@ -84,16 +84,6 @@ router.post('/login',(req,res)=>{
 })
 
 
-router.get('/logout',(req,res)=>{
-	let result = {
-		code:0,
-		massage:''
-	}
-	req.session.destroy();
-	res.json(result);
-})
-
-
 router.use((req,res,next)=>{
 	if (req.userInfo.isAdmin) {
 		next();
@@ -103,5 +93,15 @@ router.use((req,res,next)=>{
 		})
 	}
 })
+
+router.get('/logout',(req,res)=>{
+	let result = {
+		code:0,
+		massage:''
+	}
+	req.session.destroy();
+	res.json(result);
+})
+
 
 module.exports = router;
