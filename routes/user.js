@@ -35,21 +35,22 @@ router.post('/register',(req,res)=>{
 	.then((user)=>{
 		if (user) { // 已经有该用户
 			res.send(result = {
-				code:10,
+				code:1,
 				message:'用户已存在'
 			})
 		} else {
 			//插入数据到数据库
 			new userModel({
 				username:obj.username,
+				phone:obj.phone,
+				email:obj.email,
 				password:hmac(obj.password)
-				// password:hmac(obj.password)
 			})
 			.save((err)=>{ 
 				if(!err){//插入成功
 					res.json(result)
 				}else{
-					result.code = 10;
+					result.code = 1;
 					result.message = '注册失败'
 					res.json(result);
 				}
@@ -66,7 +67,7 @@ router.post('/login',(req,res)=>{
 		massage:''
 	}
 	userModel
-	.findOne({username:obj.username,password:hmac(obj.password)})
+	.findOne({username:obj.username,password:hmac(obj.password),isAdmin:false})
 	.then((user)=>{
 		if (user) {
 			req.session.userInfo = {
@@ -76,9 +77,40 @@ router.post('/login',(req,res)=>{
 			}
 			res.json(result);
 		} else {
-			result.code = 10;
+			result.code = 1;
 			result.message = '用户名和密码错误';
 			res.json(result);
+		}
+	})
+})
+
+
+router.get('/userInfo',(req,res)=>{
+	if (req.userInfo._id) {
+		res.json({
+			code:0,
+			data:req.userInfo
+		})
+	} else {
+		res.send({
+			code:1,
+			massage:''
+		})
+	}
+})
+
+
+router.get('/checkUsername',(req,res)=>{
+	userModel
+	.findOne({username:req.query.username})
+	.then((user)=>{
+		if (user) {
+			res.json({
+				code:1,
+				message:'用户名已存在'
+			})
+		} else {
+			code = 0
 		}
 	})
 })
