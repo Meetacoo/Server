@@ -85,19 +85,21 @@ router.post('/login',(req,res)=>{
 })
 
 
-router.get('/userInfo',(req,res)=>{
+router.get('/username',(req,res)=>{
 	if (req.userInfo._id) {
 		res.json({
 			code:0,
-			data:req.userInfo
+			data:{
+				username:req.userInfo.username
+			}
 		})
 	} else {
-		res.send({
-			code:1,
-			massage:''
+		res.json({
+			code:1
 		})
 	}
 })
+
 
 
 router.get('/checkUsername',(req,res)=>{
@@ -116,15 +118,6 @@ router.get('/checkUsername',(req,res)=>{
 })
 
 
-router.use((req,res,next)=>{
-	if (req.userInfo.isAdmin) {
-		next();
-	} else {
-		res.send({
-			code:10
-		})
-	}
-})
 
 router.get('/logout',(req,res)=>{
 	let result = {
@@ -135,5 +128,47 @@ router.get('/logout',(req,res)=>{
 	res.json(result);
 })
 
+router.use((req,res,next)=>{
+	if (req.userInfo._id) {
+		next();
+	}else{
+		res.json({
+			code:10
+		});
+	}
+})
 
+router.get('/userInfo',(req,res)=>{
+	if (req.userInfo._id) {
+		userModel
+		.findById(req.userInfo._id,'username phone email')
+		.then((user)=>{
+			res.json({
+				code:0,
+				data:user
+			})
+		})
+	} else {
+		res.json({
+			code:1
+		})
+	}
+})
+
+router.put('/updatePassword',(req,res)=>{
+	userModel
+	.update({_id:req.body.id},{password:req.body.password})
+	.then(raw=>{
+		res.json({
+			code:0,
+			message:'修改密码成功'
+		})
+	})
+	.catch(error=>{
+		res.json({
+			code:1,
+			message:'修改密码失败'
+		})
+	})
+})
 module.exports = router;
