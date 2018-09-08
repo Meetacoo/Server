@@ -157,7 +157,7 @@ router.get('/userInfo',(req,res)=>{
 
 router.put('/updatePassword',(req,res)=>{
 	userModel
-	.update({_id:req.body.id},{password:req.body.password})
+	.update({_id:req.userInfo._id},{password:req.body.password})
 	.then(raw=>{
 		res.json({
 			code:0,
