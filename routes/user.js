@@ -1,5 +1,6 @@
 const Router = require('express').Router;
 const userModel = require('../models/user.js')
+const productModel = require('../models/product.js')
 const hmac = require('../util/hmac.js')
 
 const router = Router(); 
@@ -128,6 +129,66 @@ router.get('/logout',(req,res)=>{
 	res.json(result);
 })
 
+router.get('/productList',(req,res)=>{
+	let page = req.query.page;
+	let query = {status:0};
+	if (req.query.categoryId) {
+		// console.log(req.query.categoryId)
+		query.category = req.query.categoryId;
+	} else {
+		query.name = {$regex:new RegExp(req.query.keyword,'i')};
+	}
+
+	let projection = 'name _id price images';
+	let sort = {order:-1};
+
+	if (req.query.orderBy == 'price_asc') {
+		sort = {price:1}
+	} else {
+		sort = {price:-1}
+	}
+
+	productModel
+	.getPaginationProducts(page,query,projection,sort)
+	.then((result)=>{
+		// console.log(result)
+		res.json({ 
+			code:0,
+			data:{
+				current:result.current,
+				total:result.total,
+				list:result.list,
+				pageSize:result.pageSize
+			}
+		});	 
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			message:'查找商品失败'
+		})
+	});
+})
+
+// 获取商品详细信息
+router.get('/productDetail',(req,res)=>{
+	productModel
+	.findOne({status:0,_id:req.query.productId},"-__v -createdAt -updateAt -category")
+	.then(product=>{
+		res.json({ 
+			code:0,
+			data:product
+		});	
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			message:'获取商品详情失败'
+		})
+	});
+})
+
+// 权限控制
 router.use((req,res,next)=>{
 	if (req.userInfo._id) {
 		next();
