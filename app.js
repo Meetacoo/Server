@@ -76,6 +76,7 @@ app.use(bodyParser.json());
 app.use('/admin',require('./routes/admin.js'));
 app.use('/category',require('./routes/category.js'));
 app.use('/product',require('./routes/product.js'));
+app.use('/cart',require('./routes/cart.js'));
 
 app.use('/',require('./routes/index.js'));
 app.use('/user',require('./routes/user.js'));
