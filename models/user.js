@@ -34,6 +34,26 @@ const CartSchema = new mongoose.Schema({
 		default:0
 	}
 });
+const ShippingSchema = new mongoose.Schema({
+	name: {
+		type:String
+	},
+	province: {
+		type:String 
+	},
+	city: {
+		type:String 
+	},
+	address: {
+		type:String 
+	},
+	phone: {
+		type:String 
+	},
+	zip: {
+		type:String 
+	}
+});
 
 var BlogSchema = new mongoose.Schema({
 	username: {
@@ -54,6 +74,10 @@ var BlogSchema = new mongoose.Schema({
 	},
 	cart: {
 		type:CartSchema
+	},
+	shipping: {
+		type:[ShippingSchema],
+		default:[]
 	}
 },{
 	timestamps:true
