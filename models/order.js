@@ -48,49 +48,49 @@ const ShippingSchema = new mongoose.Schema({
 });
 
 const OrderSchema = new mongoose.Schema({
-	// ¶©µ¥ËùÊô
+	// è®¢å•æ‰€å±ž
 	user: {
 		type:mongoose.Schema.Types.ObjectId,
 		ref:'User'
 	},
-	// ¶©µ¥ºÅ
+	// è®¢å•å·
 	orderNo: {
 		type:String
 	},
-	// Ö§¸¶½ð¶î
+	// æ”¯ä»˜é‡‘é¢
 	payment: {
 		type:String 
 	},
-	// Ö§¸¶·½Ê½
+	// æ”¯ä»˜æ–¹å¼
 	paymentType: {
 		type:String,
-		enum:["10","20"],//10-Ö§¸¶±¦ 20-Î¢ÐÅ
+		enum:["10","20"],//10-æ”¯ä»˜å® 20-å¾®ä¿¡
 		default:"10"
 	},
-	// Ö§¸¶ÀàÐÍÃèÊö
+	// æ”¯ä»˜ç±»åž‹æè¿°
 	paymentTypeDesc: {
 		type:String,
-		enum:["Ö§¸¶±¦","Î¢ÐÅ"],//10-Ö§¸¶±¦ 20-Î¢ÐÅ
-		default:"Ö§¸¶±¦"
+		enum:["æ”¯ä»˜å®","å¾®ä¿¡"],//10-æ”¯ä»˜å® 20-å¾®ä¿¡
+		default:"æ”¯ä»˜å®"
 	},
 	paymentTime: {
 		type:Date
 	},
 	status:{
 		type:String,
-		enum:["10","20","30","40","50"],//10-Î´Ö§¸¶ 20-È¡Ïû 30-ÒÑÖ§¸¶ 40-ÒÑ·¢»õ 50-Íê³É 
+		enum:["10","20","30","40","50"],//10-æœªæ”¯ä»˜ 20-å–æ¶ˆ 30-å·²æ”¯ä»˜ 40-å·²å‘è´§ 50-å®Œæˆ 
 		default:"10"
 	},
 	statusDesc:{
 		type:String,
-		enum:["Î´Ö§¸¶","È¡Ïû","ÒÑÖ§¸¶","ÒÑ·¢»õ","Íê³É"],
-		default:"Î´Ö§¸¶"
+		enum:["æœªæ”¯ä»˜","å–æ¶ˆ","å·²æ”¯ä»˜","å·²å‘è´§","å®Œæˆ"],
+		default:"æœªæ”¯ä»˜"
 	},
-	// ÅäËÍÐÅÏ¢
+	// é…é€ä¿¡æ¯
 	shipping: {
 		type:ShippingSchema
 	},
-	// ÉÌÆ·ÐÅÏ¢
+	// å•†å“ä¿¡æ¯
 	productList: {
 		type:[ProductSchema],
 		default:[]
@@ -98,11 +98,21 @@ const OrderSchema = new mongoose.Schema({
 },{
 	timestamps:true
 });
-OrderSchema.methods.getCart = function(){
+OrderSchema.statics.getPaginationOrders = function(page,query={}){
 	return new Promise((resolve,reject)=>{
-		
+		let options = {
+			page: page,//éœ€è¦æ˜¾ç¤ºçš„é¡µç 
+			model:this, //æ“ä½œçš„æ•°æ®æ¨¡åž‹
+			query:query, //æŸ¥è¯¢æ¡ä»¶
+			projection:"-__v", //æŠ•å½±ï¼Œ
+			sort:{_id:-1} //æŽ’åº
+		}
+		pagination(options)
+		.then((data)=>{
+			resolve(data); 
+		})
 	})
-}
+ }
 
 const OrderModel = mongoose.model('Order',OrderSchema);
 module.exports = OrderModel;
