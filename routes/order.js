@@ -36,7 +36,7 @@ router.get('/orderProductList',(req,res)=>{
 	})
 })
 // 获取生成订单的商品列表
-router.get('/list',(req,res)=>{
+router.get('/home/list',(req,res)=>{
 	let page = req.query.page;
 	// console.log("req.userInfo:::",req.userInfo)
 	let query = {
@@ -64,7 +64,7 @@ router.get('/list',(req,res)=>{
 })
 
 // 获取单个订单的商品列表
-router.get('/',(req,res)=>{
+router.get('/home/detail',(req,res)=>{
 	orderModel
 	.findOne({orderNo:req.query.orderNo,user:req.userInfo._id})
 	.then((order)=>{
@@ -180,4 +180,82 @@ router.post('/',(req,res)=>{
 })
 
 
+router.use((req,res,next)=>{
+	if (req.userInfo.isAdmin) {
+		next();
+	}else{
+		res.send('<h1>请用管理员账号登录</h1>');
+	}
+})
+
+// 获取所有订单的商品列表
+router.get('/',(req,res)=>{
+	let page = req.query.page;
+	orderModel
+	.getPaginationOrders(page)
+	.then((result)=>{
+		// console.log("result:::",result)
+		res.json({ 
+			code:0,
+			data:{
+				current:result.current,
+				total:result.total,
+				list:result.list,
+				pageSize:result.pageSize
+			}
+		});	 
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			massage:'获取订单商品失败'
+		});
+	})
+})
+
+// 搜索
+router.get('/search',(req,res)=>{
+	let page = req.query.page || 1;
+	let keyword = req.query.keyword
+	orderModel
+	.getPaginationOrders(page,{orderNo:{$regex:new RegExp(keyword,'i')}})
+	.then((result)=>{
+		// console.log(result)
+		res.json({ 
+			code:0,
+			data:{
+				current:result.current,
+				total:result.total,
+				list:result.list,
+				pageSize:result.pageSize,
+				keyword:keyword
+			}
+		});	 
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			message:'查找订单失败,数据库操作失败'
+		})
+	});
+})
+
+
+// 获取单个订单的商品列表
+router.get('/detail',(req,res)=>{
+	orderModel
+	.findOne({orderNo:req.query.id})
+	.then((order)=>{
+		res.json({ 
+			code:0,
+			data:order
+		});	 
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			massage:'获取订单商品失败'
+		});
+	})
+})
 module.exports = router;

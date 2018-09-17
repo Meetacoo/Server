@@ -1,5 +1,7 @@
 const Router = require('express').Router;
 const userModel = require('../models/user.js');
+const orderModel = require('../models/order.js');
+const productModel = require('../models/product.js');
 const commentModel = require('../models/comment.js');
 const pagination = require('../util/pagination.js');
 const multer = require('multer');
@@ -69,14 +71,24 @@ router.post('/login',(req,res)=>{
 })
 // 统计
 router.get('/count',(req,res)=>{
-	let result = {
-		code:0,
-		massage:'',
-		usernum:250,
-		ordernum:250,
-		goodsnum:250
-	}
-	res.json(result);
+	userModel
+	.estimatedDocumentCount()
+	.then(userNum=>{
+		orderModel.estimatedDocumentCount()
+		.then(orderNum=>{
+			productModel.estimatedDocumentCount()
+			.then(productNum=>{
+				res.json({
+					code:0,
+					massage:'',
+					usernum:userNum,
+					ordernum:orderNum,
+					goodsnum:productNum
+				});
+			})
+		})
+	})
+	
 })
 
 //显示用户列表

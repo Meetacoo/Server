@@ -51,7 +51,7 @@ ProductSchema.statics.getPaginationProducts = function(page,query={},projection=
 			resolve(data); 
 		})
 	})
- }
+}
 
 const productModel = mongoose.model('product',ProductSchema);
 module.exports = productModel;
