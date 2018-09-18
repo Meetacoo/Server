@@ -246,6 +246,7 @@ router.get('/detail',(req,res)=>{
 	orderModel
 	.findOne({orderNo:req.query.id})
 	.then((order)=>{
+		console.log("order1:::::",order)
 		res.json({ 
 			code:0,
 			data:order
@@ -258,4 +259,29 @@ router.get('/detail',(req,res)=>{
 		});
 	})
 })
+
+
+// 取消订单
+router.put('/deliver',(req,res)=>{
+	orderModel
+	.findOneAndUpdate(
+		{orderNo:req.body.id},
+		{status:"40",statusDesc:"已发货"},
+		{new:true}
+	)
+	.then((order)=>{
+		res.json({ 
+			code:0,
+			data:order
+		});	 
+		console.log("order2:::::",order)
+	})
+	.catch(e=>{
+		res.json({
+			code:1,
+			massage:'更新订单数据失败'
+		});
+	})
+})
+
 module.exports = router;
