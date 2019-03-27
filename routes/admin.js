@@ -48,7 +48,7 @@ router.post('/login',(req,res)=>{
 	let result = {
 		code:0,
 		massage:''
-	}
+	};
 	userModel
 	.findOne({username:obj.username,password:hmac(obj.password),isAdmin:true})
 	.then((user)=>{
@@ -68,7 +68,8 @@ router.post('/login',(req,res)=>{
 			res.json(result);
 		}
 	})
-})
+});
+
 // 统计
 router.get('/count',(req,res)=>{
 	userModel
@@ -89,7 +90,7 @@ router.get('/count',(req,res)=>{
 		})
 	})
 	
-})
+});
 
 //显示用户列表
 router.get('/users',(req,res)=>{
@@ -112,7 +113,7 @@ router.get('/users',(req,res)=>{
 			}
 		})
 	})
-})
+});
 
 
 
